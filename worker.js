@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vocab-cache-v2';
+const CACHE_NAME = 'vocab-master-cache-v2';
 const urlsToCache = [
   'index.html',
   'manifest.json'
