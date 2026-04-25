@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocab Master PWA</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4facfe">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3898/3898082.png">
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #121a21; color: white; margin: 0;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100vh; overflow: hidden;
+        }
+        .header { position: absolute; top: 40px; text-align: center; }
+        .header h1 { margin: 0; font-size: 1.5rem; color: #4facfe; }
+        .counter { font-size: 0.9rem; color: #8899a6; margin-top: 5px; }
+        .card-container { perspective: 1000px; width: 90%; max-width: 350px; height: 380px; }
+        .card { width: 100%; height: 100%; position: relative; transition: transform 0.5s; transform-style: preserve-3d; cursor: pointer; }
+        .card.is-flipped { transform: rotateY(180deg); }
+        .card-face {
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border-radius: 25px; padding: 25px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .card-front { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 2px solid #334155; }
+        .card-back { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: #000; transform: rotateY(180deg); }
+        .word-en { font-size: 2.2rem; font-weight: bold; }
+        .word-de { font-size: 1.8rem; font-weight: 600; }
+        .hint { font-size: 0.7rem; margin-top: 20px; opacity: 0.6; text-transform: uppercase; }
+        .controls { margin-top: 40px; display: flex; gap: 15px; }
+        button { background: #334155; color: white; border: none; padding: 15px 25px; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; }
+        button.next { background: #4facfe; color: #000; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Vocab Master</h1>
+        <div class="counter" id="counter">Vokabel laden...</div>
+    </div>
+
+    <div class="card-container" onclick="flipCard()">
+        <div class="card" id="card">
+            <div class="card-face card-front">
+                <div class="word-en" id="enText">...</div>
+                <div class="hint">Tippen zum Umdrehen</div>
+            </div>
+            <div class="card-face card-back">
+                <div class="word-de" id="deText">...</div>
+                <div class="hint">Lösung</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button onclick="prevWord(event)">Zurück</button>
+        <button class="next" onclick="nextWord(event)">Nächste</button>
+    </div>
+
+    <script>
+        // HIER KOMMT DEINE RIESIGE VOKABELLISTE REIN (VON OBEN KOPIEREN)
+        const vocabulary = [
+            {en: "Achievement", de: "Erfolg"},
+            {en: "Available", de: "Verfügbar"}
+            /* ... restliche 200 Vokabeln hier einfügen ... */
+        ];
+
+        let currentIndex = 0;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            vocabulary.sort(() => Math.random() - 0.5);
+            updateUI();
+            
+            // Service Worker Registrierung
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js')
+                .then(() => console.log("Service Worker registriert"));
+            }
+        });
+
+        function updateUI() {
+            document.getElementById('card').classList.remove('is-flipped');
+            document.getElementById('enText').innerText = vocabulary[currentIndex].en;
+            document.getElementById('deText').innerText = vocabulary[currentIndex].de;
+            document.getElementById('counter').innerText = `Vokabel ${currentIndex + 1} / ${vocabulary.length}`;
+        }
+
+        function flipCard() { document.getElementById('card').classList.toggle('is-flipped'); }
+        function nextWord(e) { e.stopPropagation(); currentIndex = (currentIndex + 1) % vocabulary.length; updateUI(); }
+        function prevWord(e) { e.stopPropagation(); currentIndex = (currentIndex - 1 + vocabulary.length) % vocabulary.length; updateUI(); }
+    </script>
+</body>
+</html>
+
