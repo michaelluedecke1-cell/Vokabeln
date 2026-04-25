@@ -424,7 +424,7 @@
             
             // Service Worker Registrierung
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js')
+                navigator.serviceWorker.register('worker.js')
                 .then(() => console.log("Service Worker registriert"));
             }
         });
